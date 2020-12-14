@@ -49,7 +49,7 @@ pub trait LSPDB {
         require!(self.get_caller() == self.get_owner_address(), "only owner can set price");
 
         let std_ref = contract_proxy!(self, &self.get_std_reference_address(), StdReferenceInterface);
-        std_ref.get_reference_data(base_symbol.clone(), "USD".as_bytes(), base_symbol.clone());
+        std_ref.get_reference_data(base_symbol.clone(), "USD".as_bytes().to_vec(), base_symbol.clone());
 
         Ok(())
     }
