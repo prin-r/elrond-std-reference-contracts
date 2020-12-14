@@ -1,0 +1,13 @@
+[package]
+name = "lspdb"
+version = "0.0.1"
+authors = ["mumu"]
+edition = "2018"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+elrond-wasm = "0.7.1"
+elrond-wasm-node = "0.7.1"
+elrond-wasm-derive = "0.7.1"
