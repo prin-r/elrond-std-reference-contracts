@@ -8,6 +8,6 @@ edition = "2018"
 path = "src/lib.rs"
 
 [dependencies]
-elrond-wasm = "0.7.1"
-elrond-wasm-node = "0.7.1"
-elrond-wasm-derive = "0.7.1"
+elrond-wasm = "0.6.0"
+elrond-wasm-node = "0.6.0"
+elrond-wasm-derive = "0.6.0"

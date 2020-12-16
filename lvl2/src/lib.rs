@@ -24,17 +24,17 @@ pub trait BandBridgeLevel2 {
     fn set_ref(&self, symbol: &[u8], ref_data: &RefData);
 
     #[endpoint]
-    fn relay(&self, #[var_args] arguments: VarArgs<MultiArg4<Vec<u8>, u64, u64, u64>>) -> SCResult<()> {
+    fn relay(&self, #[var_args] arguments: VarArgs<(Vec<u8>, u64, u64, u64)>) -> SCResult<()> {
         require!(self.get_caller() == self.get_owner_address(), "only owner can update price");
 
         for multi_arg in arguments.into_vec().into_iter() {
-            let (symbol, rate, resolve_time, request_id) = multi_arg.into_tuple();
-            
+            let (symbol, rate, resolve_time, request_id) = multi_arg;
+
             self.set_ref(symbol.as_slice(), &RefData{
                 rate,
                 resolve_time,
                 request_id,
-            });            
+            });
         }
 
         Ok(())
@@ -51,10 +51,7 @@ pub trait BandBridgeLevel2 {
     }
 
     #[view(getReferenceData)]
-    fn get_reference_data(&self,
-        base_symbol: Vec<u8>,
-        quote_symbol: Vec<u8>) -> SCResult<MultiResult3<BigUint, u64, u64>> {
-
+    fn get_reference_data(&self, base_symbol: Vec<u8>, quote_symbol: Vec<u8>) -> SCResult<(BigUint, u64, u64)> {
         let (base_rate, base_last_update) = sc_try!(self.get_ref_data(base_symbol));
         let (quote_rate, quote_last_update) = sc_try!(self.get_ref_data(quote_symbol));
 
@@ -65,13 +62,14 @@ pub trait BandBridgeLevel2 {
     }
 
     #[view(getReferenceDataBulk)]
-    fn get_reference_data_bulk(&self,
-        #[var_args] arguments: VarArgs<MultiArg2<Vec<u8>, Vec<u8>>>) 
-        -> SCResult<MultiResultVec<MultiResult3<BigUint, u64, u64>>> {
+    fn get_reference_data_bulk(
+        &self,
+        #[var_args] arguments: VarArgs<(Vec<u8>, Vec<u8>)>
+    ) -> SCResult<Vec<(BigUint, u64, u64)>> {
 
-        let mut result_vec = Vec::<MultiResult3<BigUint, u64, u64>>::with_capacity(arguments.len());
+        let mut result_vec = Vec::<(BigUint, u64, u64)>::with_capacity(arguments.len());
         for multi_arg in arguments.into_vec().into_iter() {
-            let (base_symbol, quote_symbol) = multi_arg.into_tuple();
+            let (base_symbol, quote_symbol) = multi_arg;
             let triple = sc_try!(self.get_reference_data(base_symbol, quote_symbol));
             result_vec.push(triple);
         }
